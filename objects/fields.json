@@ -1,0 +1,206 @@
+[
+  {
+    "qName": "Город",
+    "qTags": [
+      "$text",
+      "$geoname",
+      "$relates_Клиенты.Город_GeoInfo"
+    ],
+    "qSrcTables": [
+      "Клиенты"
+    ]
+  },
+  {
+    "qName": "Группа",
+    "qTags": [
+      "$text"
+    ],
+    "qSrcTables": [
+      "Товары"
+    ]
+  },
+  {
+    "qName": "ДатаЗаказа",
+    "qTags": [],
+    "qSrcTables": [
+      "Продажи"
+    ]
+  },
+  {
+    "qName": "Индекс",
+    "qTags": [],
+    "qSrcTables": [
+      "Клиенты"
+    ]
+  },
+  {
+    "qName": "Категория",
+    "qTags": [
+      "$text"
+    ],
+    "qSrcTables": [
+      "Товары"
+    ]
+  },
+  {
+    "qName": "Клиент",
+    "qTags": [
+      "$text"
+    ],
+    "qSrcTables": [
+      "Клиенты"
+    ]
+  },
+  {
+    "qIsHidden": true,
+    "qName": "Клиенты.Город_GeoInfo",
+    "qTags": [
+      "$hidden",
+      "$text",
+      "$ascii",
+      "$geopoint",
+      "$relates_Город"
+    ],
+    "qSrcTables": []
+  },
+  {
+    "qIsHidden": true,
+    "qName": "Клиенты.КодСтраны_GeoInfo",
+    "qTags": [
+      "$hidden",
+      "$text",
+      "$ascii",
+      "$geopolygon",
+      "$relates_КодСтраны"
+    ],
+    "qSrcTables": []
+  },
+  {
+    "qIsHidden": true,
+    "qName": "Клиенты.Страна_GeoInfo",
+    "qTags": [
+      "$hidden",
+      "$text",
+      "$ascii",
+      "$geopolygon",
+      "$relates_Страна"
+    ],
+    "qSrcTables": []
+  },
+  {
+    "qName": "КодЗаказа",
+    "qTags": [],
+    "qSrcTables": [
+      "Продажи"
+    ]
+  },
+  {
+    "qName": "КодСтраны",
+    "qTags": [
+      "$text",
+      "$ascii",
+      "$geoname",
+      "$relates_Клиенты.КодСтраны_GeoInfo"
+    ],
+    "qSrcTables": [
+      "Клиенты"
+    ]
+  },
+  {
+    "qName": "КодТовара",
+    "qTags": [
+      "$key",
+      "$text",
+      "$ascii"
+    ],
+    "qSrcTables": [
+      "Продажи",
+      "Товары"
+    ]
+  },
+  {
+    "qName": "Количество",
+    "qTags": [],
+    "qSrcTables": [
+      "Продажи"
+    ]
+  },
+  {
+    "qName": "Маржа",
+    "qTags": [],
+    "qSrcTables": [
+      "Продажи"
+    ]
+  },
+  {
+    "qName": "Продажи",
+    "qTags": [],
+    "qSrcTables": [
+      "Продажи"
+    ]
+  },
+  {
+    "qName": "Себестоимость",
+    "qTags": [],
+    "qSrcTables": [
+      "Продажи"
+    ]
+  },
+  {
+    "qName": "Скидка",
+    "qTags": [],
+    "qSrcTables": [
+      "Продажи"
+    ]
+  },
+  {
+    "qName": "Страна",
+    "qTags": [
+      "$text",
+      "$geoname",
+      "$relates_Клиенты.Страна_GeoInfo"
+    ],
+    "qSrcTables": [
+      "Клиенты"
+    ]
+  },
+  {
+    "qName": "Товар",
+    "qTags": [
+      "$text"
+    ],
+    "qSrcTables": [
+      "Товары"
+    ]
+  },
+  {
+    "qName": "ТранспортныеРасходы",
+    "qTags": [],
+    "qSrcTables": [
+      "Продажи"
+    ]
+  },
+  {
+    "qName": "код клиента-КодКлиента",
+    "qTags": [
+      "$key",
+      "$text",
+      "$ascii"
+    ],
+    "qSrcTables": [
+      "Клиенты",
+      "Продажи",
+      "VIP"
+    ]
+  },
+  {
+    "qName": "статус",
+    "qTags": [
+      "$text",
+      "$ascii"
+    ],
+    "qSrcTables": [
+      "VIP"
+    ]
+  }
+]

@@ -1,0 +1,164 @@
+///$tab Автоматически созданный раздел
+// Set dataManagerTables = '','Клиенты','Товары','VIP','Продажи';
+// //This block renames script tables from non generated section which conflict with the names of managed tables
+
+// For each name in $(dataManagerTables) 
+//     Let index = 0;
+//     Let currentName = name; 
+//     Let tableNumber = TableNumber(name); 
+//     Let matches = 0; 
+//     Do while not IsNull(tableNumber) or (index > 0 and matches > 0)
+//         index = index + 1; 
+//         currentName = name & '-' & index; 
+//         tableNumber = TableNumber(currentName) 
+//         matches = Match('$(currentName)', $(dataManagerTables));
+//     Loop 
+//     If index > 0 then 
+//             Rename Table '$(name)' to '$(currentName)'; 
+//     EndIf; 
+// Next; 
+// Set dataManagerTables = ;
+
+
+// Unqualify *;
+
+// __countryGeoBase:
+// LOAD
+// 	ISO3Code AS [__ISO3Code],
+// 	ISO2Code AS [__ISO2Code],
+// 	Polygon AS [__Polygon]
+// FROM [lib://AttachedFiles/countryGeo.qvd]
+// (qvd);
+
+// __countryAliasesBase:
+// LOAD
+// 	Alias AS [__Country],
+// 	ISO3Code AS [__ISO3Code]
+// FROM [lib://AttachedFiles/countryAliases.qvd]
+// (qvd);
+
+// __cityAliasesBase:
+// LOAD
+// 	Alias AS [__City],
+// 	geoKey AS [__geoKey],
+// 	CountryCode AS [__CityCountryCode]
+// FROM [lib://AttachedFiles/cityAliases.qvd]
+// (qvd);
+
+// __cityGeoBase:
+// LOAD
+// 	geoKey AS [__geoKey],
+// 	geoPoint AS [__GeoPoint]
+// FROM [lib://AttachedFiles/cityGeo.qvd]
+// (qvd);
+
+// __countryCodeIsoThree2Polygon:
+// MAPPING LOAD
+// 	__ISO3Code,
+// 	__Polygon
+// RESIDENT __countryGeoBase;
+
+// __countryName2IsoThree:
+// MAPPING LOAD
+// 	__Country,
+// 	__ISO3Code
+// RESIDENT __countryAliasesBase;
+
+// __countryCodeAndCityName2Key:
+// MAPPING LOAD
+// 	__CityCountryCode & __City,
+// 	__geoKey
+// RESIDENT __cityAliasesBase;
+
+// __cityKey2GeoPoint:
+// MAPPING LOAD
+// 	__geoKey,
+// 	__GeoPoint
+// RESIDENT __cityGeoBase;
+
+// [Клиенты]:
+// LOAD
+// 	[КодКлиента] AS [код клиента-КодКлиента],
+// 	[Клиент],
+// 	[КодСтраны],
+// 	[Страна],
+// 	[Город],
+// 	[Индекс],
+// 	APPLYMAP( '__countryCodeIsoThree2Polygon', UPPER([КодСтраны]), '-') AS [Клиенты.КодСтраны_GeoInfo],
+// 	APPLYMAP( '__countryCodeIsoThree2Polygon', APPLYMAP( '__countryName2IsoThree', LOWER([Страна])), '-') AS [Клиенты.Страна_GeoInfo],
+// 	APPLYMAP( '__cityKey2GeoPoint', APPLYMAP( '__countryCodeAndCityName2Key', UPPER([КодСтраны]) & LOWER([Город])), '-') AS [Клиенты.Город_GeoInfo]
+//  FROM [lib://Продажи/Клиенты.xlsx]
+// (ooxml, embedded labels, table is Клиенты);
+
+// [Товары]:
+// LOAD
+// 	[КодТовара],
+// 	[Товар],
+// 	[Группа],
+// 	[Категория]
+//  FROM [lib://Продажи/Товары.xlsx]
+// (ooxml, embedded labels, table is Товары);
+
+// [VIP]:
+// LOAD
+// 	[код клиента] AS [код клиента-КодКлиента],
+// 	[статус];
+// LOAD * INLINE 
+// [
+// код клиента,статус
+// CUST001,VIP
+// CUST002,VIP
+// CUST003,VIP
+// ](delimiter is ',');
+
+// [Продажи]:
+// LOAD
+// 	[КодЗаказа],
+// 	[ДатаЗаказа],
+// 	[КодТовара],
+// 	[КодКлиента] AS [код клиента-КодКлиента],
+// 	[Количество],
+// 	[Продажи],
+// 	[Себестоимость],
+// 	[Скидка],
+// 	[Маржа],
+// 	[ТранспортныеРасходы]
+//  FROM [lib://Продажи/Продажи.xlsx]
+// (ooxml, embedded labels, table is Продажи);
+
+
+
+// TAG FIELD [КодСтраны] WITH '$geoname', '$relates_Клиенты.КодСтраны_GeoInfo';
+// TAG FIELD [Клиенты.КодСтраны_GeoInfo] WITH '$geopolygon', '$hidden', '$relates_КодСтраны';
+// TAG FIELD [Страна] WITH '$geoname', '$relates_Клиенты.Страна_GeoInfo';
+// TAG FIELD [Клиенты.Страна_GeoInfo] WITH '$geopolygon', '$hidden', '$relates_Страна';
+// TAG FIELD [Город] WITH '$geoname', '$relates_Клиенты.Город_GeoInfo';
+// TAG FIELD [Клиенты.Город_GeoInfo] WITH '$geopoint', '$hidden', '$relates_Город';
+
+// DROP TABLES __countryGeoBase, __countryAliasesBase, __cityAliasesBase, __cityGeoBase;
+// [autoCalendar]: 
+//   DECLARE FIELD DEFINITION Tagged ('$date')
+// FIELDS
+//   Dual(Year($1), YearStart($1)) AS [Year] Tagged ('$axis', '$year'),
+//   Dual('Q'&Num(Ceil(Num(Month($1))/3)),Num(Ceil(NUM(Month($1))/3),00)) AS [Quarter] Tagged ('$quarter', '$cyclic'),
+//   Dual(Year($1)&'-Q'&Num(Ceil(Num(Month($1))/3)),QuarterStart($1)) AS [YearQuarter] Tagged ('$yearquarter', '$qualified'),
+//   Dual('Q'&Num(Ceil(Num(Month($1))/3)),QuarterStart($1)) AS [_YearQuarter] Tagged ('$yearquarter', '$hidden', '$simplified'),
+//   Month($1) AS [Month] Tagged ('$month', '$cyclic'),
+//   Dual(Year($1)&'-'&Month($1), monthstart($1)) AS [YearMonth] Tagged ('$axis', '$yearmonth', '$qualified'),
+//   Dual(Month($1), monthstart($1)) AS [_YearMonth] Tagged ('$axis', '$yearmonth', '$simplified', '$hidden'),
+//   Dual('W'&Num(Week($1),00), Num(Week($1),00)) AS [Week] Tagged ('$weeknumber', '$cyclic'),
+//   Date(Floor($1)) AS [Date] Tagged ('$axis', '$date', '$qualified'),
+//   Date(Floor($1), 'D') AS [_Date] Tagged ('$axis', '$date', '$hidden', '$simplified'),
+//   If (DayNumberOfYear($1) <= DayNumberOfYear(Today()), 1, 0) AS [InYTD] ,
+//   Year(Today())-Year($1) AS [YearsAgo] ,
+//   If (DayNumberOfQuarter($1) <= DayNumberOfQuarter(Today()),1,0) AS [InQTD] ,
+//   4*Year(Today())+Ceil(Month(Today())/3)-4*Year($1)-Ceil(Month($1)/3) AS [QuartersAgo] ,
+//   Ceil(Month(Today())/3)-Ceil(Month($1)/3) AS [QuarterRelNo] ,
+//   If(Day($1)<=Day(Today()),1,0) AS [InMTD] ,
+//   12*Year(Today())+Month(Today())-12*Year($1)-Month($1) AS [MonthsAgo] ,
+//   Month(Today())-Month($1) AS [MonthRelNo] ,
+//   If(WeekDay($1)<=WeekDay(Today()),1,0) AS [InWTD] ,
+//   (WeekStart(Today())-WeekStart($1))/7 AS [WeeksAgo] ,
+//   Week(Today())-Week($1) AS [WeekRelNo] ;
+
+// DERIVE FIELDS FROM FIELDS [ДатаЗаказа] USING [autoCalendar] ;

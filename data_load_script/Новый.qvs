@@ -1,0 +1,98 @@
+///$tab Новый
+[Страны]:
+mapping load * inline [
+КодСтраны,	Страна
+ARM,	Армения
+BLR,	Беларусь
+KAZ,	Казахстан
+KGZ,	Кыргызстан
+RUS,	Россия
+UKR,	Украина
+
+];
+
+
+
+Клиенты:
+LOAD
+    "код клиента-КодКлиента",
+    Клиент,
+    КодСтраны,
+    applymap('Страны',КодСтраны,КодСтраны) as Страна,
+    Город,
+    Индекс,
+    Клиенты.КодСтраны_GeoInfo,
+    Клиенты.Страна_GeoInfo,
+    Клиенты.Город_GeoInfo
+FROM [lib://AttachedFiles/Клиенты(fcTzPSb).xlsx]
+(ooxml, embedded labels, table is [MyWorkSheet-1]);
+
+Продажи:
+LOAD
+    КодЗаказа,
+    ДатаЗаказа,
+    КодТовара,
+    "код клиента-КодКлиента",
+    Количество,
+    Продажи,
+    Себестоимость,
+    Скидка,
+    Маржа,
+    ТранспортныеРасходы
+FROM [lib://AttachedFiles/Продажи(zZbgXYG).xlsx]
+(ooxml, embedded labels, table is [MyWorkSheet-1]);
+
+Товары:
+LOAD
+    КодТовара,
+    Товар,
+    Группа,
+    Категория
+FROM [lib://AttachedFiles/Товары(AmhpEy).xlsx]
+(ooxml, embedded labels, table is [MyWorkSheet-1]);
+
+[VIP]:
+LOAD
+	[код клиента] AS [код клиента-КодКлиента],
+	[статус];
+LOAD * INLINE 
+[
+код клиента,статус
+CUST001,VIP
+CUST002,VIP
+CUST003,VIP
+](delimiter is ',');
+
+[autoCalendar]: 
+  DECLARE FIELD DEFINITION Tagged ('$date')
+FIELDS
+  Dual(Year($1), YearStart($1)) AS [Year] Tagged ('$axis', '$year'),
+  Dual('Q'&Num(Ceil(Num(Month($1))/3)),Num(Ceil(NUM(Month($1))/3),00)) AS [Quarter] Tagged ('$quarter', '$cyclic'),
+  Dual(Year($1)&'-Q'&Num(Ceil(Num(Month($1))/3)),QuarterStart($1)) AS [YearQuarter] Tagged ('$yearquarter', '$qualified'),
+  Dual('Q'&Num(Ceil(Num(Month($1))/3)),QuarterStart($1)) AS [_YearQuarter] Tagged ('$yearquarter', '$hidden', '$simplified'),
+  Month($1) AS [Month] Tagged ('$month', '$cyclic'),
+  Dual(Year($1)&'-'&Month($1), monthstart($1)) AS [YearMonth] Tagged ('$axis', '$yearmonth', '$qualified'),
+  Dual(Month($1), monthstart($1)) AS [_YearMonth] Tagged ('$axis', '$yearmonth', '$simplified', '$hidden'),
+//   Dual('W'&Num(Week($1),00), Num(Week($1),00)) AS [Week] Tagged ('$weeknumber', '$cyclic'),
+  Date(Floor($1)) AS [Date] Tagged ('$axis', '$date', '$qualified'),
+  Date(Floor($1), 'D') AS [_Date] Tagged ('$axis', '$date', '$hidden', '$simplified'),
+  If (DayNumberOfYear($1) <= DayNumberOfYear(Today()), 1, 0) AS [InYTD] ,
+  Year(Today())-Year($1) AS [YearsAgo] ,
+  If (DayNumberOfQuarter($1) <= DayNumberOfQuarter(Today()),1,0) AS [InQTD] ,
+  4*Year(Today())+Ceil(Month(Today())/3)-4*Year($1)-Ceil(Month($1)/3) AS [QuartersAgo] ,
+  Ceil(Month(Today())/3)-Ceil(Month($1)/3) AS [QuarterRelNo] ,
+  If(Day($1)<=Day(Today()),1,0) AS [InMTD] ,
+  12*Year(Today())+Month(Today())-12*Year($1)-Month($1) AS [MonthsAgo] ,
+  Month(Today())-Month($1) AS [MonthRelNo] ,
+  If(WeekDay($1)<=WeekDay(Today()),1,0) AS [InWTD] ,
+  (WeekStart(Today())-WeekStart($1))/7 AS [WeeksAgo] ,
+  Week(Today())-Week($1) AS [WeekRelNo] ;
+
+DERIVE FIELDS FROM FIELDS [ДатаЗаказа] USING [autoCalendar] ;
+
+TAG FIELD [КодСтраны] WITH '$geoname', '$relates_Клиенты.КодСтраны_GeoInfo';
+TAG FIELD [Клиенты.КодСтраны_GeoInfo] WITH '$geopolygon', '$hidden', '$relates_КодСтраны';
+TAG FIELD [Страна] WITH '$geoname', '$relates_Клиенты.Страна_GeoInfo';
+TAG FIELD [Клиенты.Страна_GeoInfo] WITH '$geopolygon', '$hidden', '$relates_Страна';
+TAG FIELD [Город] WITH '$geoname', '$relates_Клиенты.Город_GeoInfo';
+TAG FIELD [Клиенты.Город_GeoInfo] WITH '$geopoint', '$hidden', '$relates_Город';

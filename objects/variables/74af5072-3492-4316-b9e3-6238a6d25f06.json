@@ -1,0 +1,14 @@
+{
+  "qInfo": {
+    "qId": "74af5072-3492-4316-b9e3-6238a6d25f06",
+    "qType": "variable"
+  },
+  "qMetaDef": {},
+  "qName": "currentName",
+  "qNumberPresentation": {
+    "qType": "U",
+    "qnDec": 10,
+    "qUseThou": 0
+  },
+  "qDefinition": "Продажи"
+}

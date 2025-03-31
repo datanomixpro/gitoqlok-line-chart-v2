@@ -1,0 +1,48 @@
+{
+  "qInfo": {
+    "qId": "UtbQu",
+    "qType": "measure"
+  },
+  "qMeasure": {
+    "qLabel": "Процент продаж Current Month vs Prev Month",
+    "qDef": "(Sum(Продажи) - Above(Sum(Продажи))) / Above(Sum(Продажи))",
+    "qGrouping": "N",
+    "qExpressions": [],
+    "qActiveExpression": 0,
+    "qNumFormat": {
+      "qType": "F",
+      "qnDec": 2,
+      "qUseThou": 0,
+      "qFmt": "0,00%",
+      "qDec": ",",
+      "qThou": " "
+    },
+    "isCustomFormatted": false,
+    "coloring": {
+      "gradient": {
+        "colors": [
+          {
+            "color": "#f93f17",
+            "index": 10
+          },
+          {
+            "color": "#276e27",
+            "index": 3
+          }
+        ],
+        "breakTypes": [
+          false
+        ],
+        "limits": [
+          0
+        ],
+        "limitType": "absolute"
+      }
+    }
+  },
+  "qMetaDef": {
+    "title": "Процент продаж Current Month vs Prev Month",
+    "description": "",
+    "tags": []
+  }
+}

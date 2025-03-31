@@ -1,0 +1,55 @@
+{
+  "qInfo": {
+    "qId": "eLhgB",
+    "qType": "measure"
+  },
+  "qMeasure": {
+    "qLabel": "Маржа %",
+    "qDef": "sum([Маржа])/sum([Продажи])*100",
+    "qGrouping": "N",
+    "qExpressions": [],
+    "qActiveExpression": 0,
+    "qNumFormat": {
+      "qType": "F",
+      "qnDec": 2,
+      "qUseThou": 0,
+      "qFmt": "# ##0,0",
+      "qDec": ",",
+      "qThou": " "
+    },
+    "coloring": {
+      "gradient": {
+        "colors": [
+          {
+            "color": "#ff84ac",
+            "index": -1
+          },
+          {
+            "color": "#4edc4e",
+            "index": -1
+          },
+          {
+            "color": "#276e27",
+            "index": 3
+          }
+        ],
+        "breakTypes": [
+          false,
+          false
+        ],
+        "limits": [
+          10,
+          20
+        ],
+        "limitType": "absolute"
+      }
+    },
+    "isCustomFormatted": false,
+    "numFormatFromTemplate": true
+  },
+  "qMetaDef": {
+    "title": "Маржа %",
+    "description": "",
+    "tags": []
+  }
+}
